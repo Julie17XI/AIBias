@@ -49,10 +49,15 @@ def getIMDB(imdbinfo,data_folder):
 def getUTKdata(folder):
     maps={0:'caucasian',1:'afroamerican',2:'asian',3:'indian',4:'others'}
     map_gender={0:'male',1:'female'}
+    #tx:for example "59_1_3_20170109142030313.jpg.chip.jpg" means 59 years old, female, indian.
     images=os.listdir(folder+'/UTKFace')
+    #tx:images hold all the entries in the directory of the path "folder + /UTKFace".
     allinformation=[]
     for image in images:
         information=image.split('_')
+        #tx:???is there a reason why we only check the 3rd element
+        print("image***:", image)
+        print("information:", information)
         if len(information[2])!=1:
             continue
         try:
@@ -66,7 +71,7 @@ def getUTKdata(folder):
         except Exception as e:
             print(folder+'/UTKFace/'+image)
             continue
-        
+        #tx:the information we get from parsing the entry name are: age, gender and race in a human readable form [{image_path: ./././ age: 59 gender: female race: indian}..]
     return allinformation
 
 def getMORPHdata(folder):

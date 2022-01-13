@@ -52,6 +52,8 @@ if __name__=="__main__":
     data_folder = args.dir
     main(data_folder)
 
+#where is align and crop?
+
     
     
 

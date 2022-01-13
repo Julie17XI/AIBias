@@ -130,16 +130,16 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='control experiment')
 
-    parser.add_argument('-datafolder', help='data folder',default='./data/original')
-    parser.add_argument('-train_path', help='training samples', default='train.tsv')
-    parser.add_argument('-test_path', help='test samples', default='test.tsv')
+    parser.add_argument('-datafolder', help='data folder',default='./data/')
+    parser.add_argument('-train_path', help='training samples', default='original/train_new.tsv')
+    parser.add_argument('-test_path', help='test samples', default='original/test_new.tsv')
     parser.add_argument('-model_name', help='model to be trained', default='resnet50')
-    parser.add_argument('-dataset', help='dataset to be trained', default='ori_balanced_data')
+    parser.add_argument('-dataset', help='dataset to be trained', default='./data/UTKFace')
     parser.add_argument('-opt', type=str, help='choose optimizer', default="adam")
     parser.add_argument('-num_epoches', type=int, help='number of classes', default=100)
     parser.add_argument('-lr', type=float, help='learning rate', default=0.0001)
     parser.add_argument('-pretrain',action='store_true',help='if this is a pretraining procedure')
-    parser.add_argument('-pretrained_model',type=str,help='The pre-trained model')
+    parser.add_argument('-pretrained_model',type=str,help='The pre-trained model', default="./data/train_resnet50")
     
     args = parser.parse_args()
 
@@ -153,7 +153,6 @@ if __name__=="__main__":
     num_epoches=args.num_epoches
     pretrain=args.pretrain
     trained_model=args.pretrained_model
-    dataset = args.train_path.split('_')[0]
 
     # Checking the existance of pre-trained model
     if not pretrain:
@@ -167,7 +166,8 @@ if __name__=="__main__":
     for i in lists:
         if i.split('.')[-1]=='pt':
             trained_model=os.path.join(trained_model,i)
-    
+
+    print(pretrain)
     # Train
     train_model(train_path, test_path, model_name=model_name,
     opt=opt,dataset=dataset,num_epochs=num_epoches,lr=lr,pretrain=pretrain,trained_model=trained_model)
