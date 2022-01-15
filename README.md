@@ -1,8 +1,6 @@
-This is the code to our paper "Fair and accurate age prediction using distribution aware data curation and augmentation".
+This is the code to paper "Fair and accurate age prediction using distribution aware data curation and augmentation".
 
 ## Basic Overview
-
-<p align="center"><img src="./results/Paper_Workflow.png"></p>
 
 <br>
 
@@ -12,7 +10,7 @@ For analysis and curating our Balanced Dataset, UTK-Face, MOPRH-2, Megaage-Asian
 For generalization test, FG-NET dataset is taken as a dataset from a total different distribution.
 These datasets are downloaded or purchased via the following links:
 - IMDB-WIKI: https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
-- UTK-Face: https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
+- UTK-Face: https://susanqq.github.io/UTKFace/
 - MORPH-2: https://ebill.uncw.edu/C20231_ustores/web/product_detail.jsp?PRODUCTID=8 (Needs to be purchased)
 - MegaAge-Asian: http://mmlab.ie.cuhk.edu.hk/projects/MegaAge/
 - APPA-REAL: http://chalearnlap.cvc.uab.es/dataset/26/description/
@@ -27,7 +25,7 @@ After downloading these datasets, they are required to be moved to the ``./data`
 After downloading and unzipping data in the ``./data`` folder, go into ``pre-processing`` folder and run the following code to construct Balanced Data.
 
 ```
-python data_preprocess.py -dir <PATH_TO_DATA> -train_save_path <PATH_TO_TRAIN_DATA> -test_save_path <PATH_TO_TEST_DATA>
+python3 data_preprocess.py
 ```
 ### Results
 After balancing, the dataset has the following distribution:
