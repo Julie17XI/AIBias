@@ -22,7 +22,7 @@ def flip_image(image_path):
     save_path = image_path + '_flip.jpg'
     im_flipped.save(save_path, 'JPEG')
     return save_path
-
+    #jpg_train.tsv files are created in data/original after running python3 data_preprocess.py. Why?
 
 def get_balanced_data(data_folder, train_save_path='../data/original/train_new.tsv', test_save_path='../data/original/test_new.tsv'):
     # dataset_names = ['UTKdata', 'Megaasian', 'APPA', 'MORPH']
@@ -79,8 +79,11 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
             if 0 <= samples['age'] <= 100 and samples['race'] in ['caucasian', 'afroamerican', 'asian']:
                 #tx: 'image_path':folder+'/UTKFace/'+image
                 #tx: ??? are we going to store every picture that satisfies if conditions to a new path?
+                print("file_path_before**********:", samples['image_path'])
+                #tx: replace won't rise errors if it doesn't find "OriDatasets".
                 file_path = samples['image_path'].replace('OriDatasets', 'AliDatasets_new')
-                #tx: check if the file_path really exists in the operating system, ???select effective pictures?
+                print("file_path_after**********:", file_path)
+                #tx: check if the file_path really exists in the operating system, maybe it can select effective pictures?
                 if not os.path.exists(file_path):
                     #print(file_path)
                     continue
@@ -91,7 +94,7 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
                 dataset_samples[samples['age']][samples['race']][dataset] += 1
                 #tx: update the number of people for each race and age combination
                 num_sample[samples['race']][samples['age']] += 1
-                #tx:flip this image and dave it to a new path
+                #tx:flip this image and save it to a new path
                 try:
                     save_path = flip_image(file_path)
                 except Exception as e:
@@ -102,21 +105,25 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
                     [save_path, samples['race'], samples['age']])
                 dataset_samples[samples['age']][samples['race']][dataset] += 1
                 num_sample[samples['race']][samples['age']] += 1
-
+    #print("num_sample after****************:", num_sample)
     # Sort the number of samples of each race
     for key in num_sample:
         #tx:samples is age counter (age as the key) for each race, the key below is a race
         samples = copy.deepcopy(num_sample[key])
-        #tx: ???what difference will the sort make?
+        #print("samples********", samples)
+        #tx: sort age by count for every race
         num_sample[key] = dict(sorted(samples.items(), key=lambda samples: samples[1]))
-        print("num_sample********", key)
+        #print("num_sample********", key)
     print("num_sample after****************:", num_sample)
     #tx:???find a region of age that all races are populated
     min_sample, max_sample = get_min_max_sample(num_sample)
+    print("min_sample*******:", min_sample, "max_sample*******:", max_sample)
 
     # Store the train data and test data
     balanced_train_data = []
     balanced_test_data = []
+    print("balanced_train_data*****:", balanced_train_data)
+    print("balanced_test_data*****:", balanced_test_data)
     #tx: make an age counter for every race
     train_data_num = {
         race: {i: 0 for i in range(0, 101)} for race in races
@@ -125,20 +132,21 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
     for age in range(1, 101):
 
         # Get threshold
-        # tx: ???what's the purpose of having a threshold
+        # xi: ???what's the purpose of having a threshold
         threshold = np.inf
         for race in num_sample:
-            #tx: this threshold is the smallest number of count for an age and race combination
+            #tx: this threshold is the smallest number of count for all ages for a given race
             threshold = min(threshold, num_sample[race][age])
-        #tx: ???
+            #print("num_sample[race][age]:******", num_sample[race][age])
+        #xi: why do we define threshold this way?
         threshold = int(min(max_sample, max(min_sample, threshold)))
 
         # Get select_size
-        #tx: ds_num shows how many datasets are being used
+        #xi: ds_num shows how many datasets are being used
         ds_num = len(all_datasets)
-        #tx: ??? what is this select size for
+        #xi: This select size  will ensure that for a race and age combination, data from every dataset will be choosen
         select_size = math.ceil(threshold * 1.0 / ds_num)
-        # print(threshold, select_size,max_sample,min_sample)
+        print("threshold:", threshold, "select_size:", select_size,"max_sample:", max_sample, "min_sample:", min_sample)
 
         for race in num_sample:
             # Copy threshold and threshold for update for this race
@@ -180,7 +188,8 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
 
     balanced_test_data = pd.DataFrame(balanced_test_data)
     balanced_train_data = pd.DataFrame(balanced_train_data)
-
+    print("balanced_train_data*****:", balanced_train_data)
+    print("balanced_test_data*****:", balanced_test_data)
     balanced_test_data.to_csv(test_save_path, header=None, index=None, sep='\t')
     balanced_train_data.to_csv(train_save_path, header=None, index=None, sep='\t')
     print(train_data_num)

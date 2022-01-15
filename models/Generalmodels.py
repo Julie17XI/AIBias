@@ -71,7 +71,7 @@ def densenet121(classes,pretrain, trained_model,if_test=False):
     print(model.classifier)
     return model  
 
-
+#tx: resnet50 is a 50-layer deep CNN
 def resnet50(classes,pretrain, trained_model,if_test=False):
     if if_test:
         model=models.resnet50(pretrained=False)

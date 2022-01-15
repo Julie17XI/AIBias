@@ -13,6 +13,8 @@ def get_min_max_sample(num_sample):
     min_sample = 0
     # the key below is race, find the a common region of age that all races are populated
     for key in num_sample:
+        print("get_min_max_sample,key:", key)
+        print("get_min_max_sample,num_sample[key]:", num_sample[key])
         max_sample = min(max_sample,np.quantile(list(num_sample[key].values()),0.8))
         min_sample = max(min_sample,np.quantile(list(num_sample[key].values()),0.2))
         print("max_sample:", max_sample, "min_sample:", min_sample)

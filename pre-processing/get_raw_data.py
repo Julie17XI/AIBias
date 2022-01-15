@@ -54,24 +54,25 @@ def getUTKdata(folder):
     #tx:images hold all the entries in the directory of the path "folder + /UTKFace".
     allinformation=[]
     for image in images:
-        information=image.split('_')
-        #tx:???is there a reason why we only check the 3rd element
-        print("image***:", image)
-        print("information:", information)
-        if len(information[2])!=1:
-            continue
-        try:
-            allinformation.append(
-                {
-                'image_path':folder+'/UTKFace/'+image,
-                'age':int(information[0]),# first term is age
-                'gender':map_gender[int(information[1])],#second term is gender
-                'race':maps[int(information[2])]#, #third term is race
-                })
-        except Exception as e:
-            print(folder+'/UTKFace/'+image)
-            continue
-        #tx:the information we get from parsing the entry name are: age, gender and race in a human readable form [{image_path: ./././ age: 59 gender: female race: indian}..]
+        if not image.startswith('.'):
+            information=image.split('_')
+            #tx:???is there a reason why we only check the 3rd element
+            print("image***:", image)
+            print("information:", information)
+            if len(information[2])!=1:
+                continue
+            try:
+                allinformation.append(
+                    {
+                    'image_path':folder+'/UTKFace/'+image,
+                    'age':int(information[0]),# first term is age
+                    'gender':map_gender[int(information[1])],#second term is gender
+                    'race':maps[int(information[2])]#, #third term is race
+                    })
+            except Exception as e:
+                print(folder+'/UTKFace/'+image)
+                continue
+            #tx:the information we get from parsing the entry name are: age, gender and race in a human readable form [{image_path: ./././ age: 59 gender: female race: indian}..]
     return allinformation
 
 def getMORPHdata(folder):
