@@ -43,7 +43,8 @@ def VGG16(classes,pretrain, trained_model,if_test=False):
         model=models.vgg16(pretrained=False)
         num_ftrs = model.classifier[6].in_features
         model.classifier[6] = nn.Linear(num_ftrs, 101)
-        model.load_state_dict(torch.load(trained_model))
+        #tx: file is not pickled. so no need to unpickle it
+#        model.load_state_dict(torch.load(trained_model))
         num_ftrs = model.classifier[6].in_features
         model.classifier[6] = nn.Linear(num_ftrs, classes)
         print(model.classifier[6])

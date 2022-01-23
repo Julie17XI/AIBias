@@ -11,7 +11,6 @@ from PIL import Image
 from tqdm import tqdm
 
 sys.path.append('../')
-print(sys.path)
 from get_raw_data import getUTKdata, getMORPHdata, getAPPAdata, getMegaasianData
 from utils.data_utils import get_min_max_sample, update
 
@@ -45,12 +44,10 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
     num_samples_tmp = {
         race: {i: 0 for i in dataset_names} for race in races
     }
-    print("num_samples:********************************", num_samples_tmp)
     #tx:copy num_samples_tmp for 100 times, 0~100 represents the ages we care about
     dataset_samples = {
         i: copy.deepcopy(num_samples_tmp) for i in range(0, 101)
     }
-    print("dataset_samples:", dataset_samples)
     # Store the samples, organized by dataset->race->age
     # For sampling the balanced data
     #tx: defaultdict will not raise key error. If a race doesn't exist, all_sample_tmp will return an empty list.
@@ -58,13 +55,10 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
     all_samples_tmp = {
         race: defaultdict(list) for race in races
     }
-    print("all_samples_tmp***********:", all_samples_tmp)
-
     #tx: every dataset will have a dictionary with races as its keys
     all_samples = {
         dataset: copy.deepcopy(all_samples_tmp) for dataset in dataset_names
     }
-    print("all_samples***********:", all_samples)
     # Number of samples for each ethnicity in each age
     # For getting the max, min and threshold
     #tx: num_sample will return something like: num_sample = {caucasian : {0: 0, 1: 0, 2: 0, 3: 0 ...101: 0} afroamerican: caucasian : {0: 0, 1: 0, 2: 0, 3: 0 ...101: 0} asisan: {0: 0, 1: 0, 2: 0, 3: 0 ...101: 0}}
@@ -72,20 +66,16 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
     num_sample = {
         race: {i: 0 for i in range(0, 101)} for race in races
     }
-    print("num_sample***********************:", num_sample )
     # Store and organize the original data from the raw data
     for dataset in all_datasets:
         for samples in tqdm(all_datasets[dataset]):
             if 0 <= samples['age'] <= 100 and samples['race'] in ['caucasian', 'afroamerican', 'asian']:
                 #tx: 'image_path':folder+'/UTKFace/'+image
                 #tx: ??? are we going to store every picture that satisfies if conditions to a new path?
-                print("file_path_before**********:", samples['image_path'])
                 #tx: replace won't rise errors if it doesn't find "OriDatasets".
                 file_path = samples['image_path'].replace('OriDatasets', 'AliDatasets_new')
-                print("file_path_after**********:", file_path)
                 #tx: check if the file_path really exists in the operating system, maybe it can select effective pictures?
                 if not os.path.exists(file_path):
-                    #print(file_path)
                     continue
                 #tx: every dataset will have a dictionary with races as its keys, read each sample and complement the information with sample path
                 all_samples[dataset][samples['race']][samples['age']].append(
@@ -105,25 +95,18 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
                     [save_path, samples['race'], samples['age']])
                 dataset_samples[samples['age']][samples['race']][dataset] += 1
                 num_sample[samples['race']][samples['age']] += 1
-    #print("num_sample after****************:", num_sample)
     # Sort the number of samples of each race
     for key in num_sample:
         #tx:samples is age counter (age as the key) for each race, the key below is a race
         samples = copy.deepcopy(num_sample[key])
-        #print("samples********", samples)
         #tx: sort age by count for every race
         num_sample[key] = dict(sorted(samples.items(), key=lambda samples: samples[1]))
-        #print("num_sample********", key)
-    print("num_sample after****************:", num_sample)
     #tx:???find a region of age that all races are populated
     min_sample, max_sample = get_min_max_sample(num_sample)
-    print("min_sample*******:", min_sample, "max_sample*******:", max_sample)
 
     # Store the train data and test data
     balanced_train_data = []
     balanced_test_data = []
-    print("balanced_train_data*****:", balanced_train_data)
-    print("balanced_test_data*****:", balanced_test_data)
     #tx: make an age counter for every race
     train_data_num = {
         race: {i: 0 for i in range(0, 101)} for race in races
@@ -137,7 +120,6 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
         for race in num_sample:
             #tx: this threshold is the smallest number of count for all ages for a given race
             threshold = min(threshold, num_sample[race][age])
-            #print("num_sample[race][age]:******", num_sample[race][age])
         #xi: why do we define threshold this way?
         threshold = int(min(max_sample, max(min_sample, threshold)))
 
@@ -146,7 +128,6 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
         ds_num = len(all_datasets)
         #xi: This select size  will ensure that for a race and age combination, data from every dataset will be choosen
         select_size = math.ceil(threshold * 1.0 / ds_num)
-        print("threshold:", threshold, "select_size:", select_size,"max_sample:", max_sample, "min_sample:", min_sample)
 
         for race in num_sample:
             # Copy threshold and threshold for update for this race
@@ -188,11 +169,8 @@ def get_balanced_data(data_folder, train_save_path='../data/original/train_new.t
 
     balanced_test_data = pd.DataFrame(balanced_test_data)
     balanced_train_data = pd.DataFrame(balanced_train_data)
-    print("balanced_train_data*****:", balanced_train_data)
-    print("balanced_test_data*****:", balanced_test_data)
     balanced_test_data.to_csv(test_save_path, header=None, index=None, sep='\t')
     balanced_train_data.to_csv(train_save_path, header=None, index=None, sep='\t')
-    print(train_data_num)
     return
 
 
@@ -203,9 +181,7 @@ def get_separate_data(file_path):
     lines = f.readlines()
     goals = defaultdict(list)
     for line in lines:
-        print("line*****:", line)
-        goal = line.strip().split('\t')[0].split('/')[4]
-        print("goal******:", goal)
+        goal = line.strip().split('\t')[0].split('/')[3]
         goals[goal].append(line)
 
     for keys in goals:

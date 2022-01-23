@@ -1,0 +1,1 @@
+epoch,time(s),train_loss,train_acc,train_mae,test_loss,test_acc(%),test_mae

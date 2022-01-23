@@ -17,7 +17,8 @@ import torch
 import os
 import torch.nn as nn
 
-def train_model(train_path, test_path, batch_size=128, model_name = "resnet", opt="sgd",dataset="UTK",num_epochs=100,lr=0.01,
+#tx: changed model_name from "resnet" to "VGG"
+def train_model(train_path, test_path, batch_size=128, model_name = "VGG", opt="sgd",dataset="UTK",num_epochs=100,lr=0.01,
                 pretrain=False,trained_model=None):
     # Configuration
     state = defaultdict()
@@ -52,14 +53,16 @@ def train_model(train_path, test_path, batch_size=128, model_name = "resnet", op
     print("num_classes: ",num_classes)
     if model_name=='VGG':
         net=Generalmodels.VGG16(num_classes,pretrain, trained_model,if_test=False)
+        print("get VGG")
     elif model_name=='resnet50':
         net = Generalmodels.resnet50(num_classes,pretrain, trained_model,if_test=False)
     elif model_name=='densenet121':
         net = Generalmodels.densenet121(num_classes,pretrain, trained_model,if_test=False)
     elif model_name=='alexnet':
         net = Generalmodels.alexnet(num_classes,pretrain, trained_model,if_test=False)
-    
-    device=torch.device("cuda")
+
+    #tx: move model net to device
+    device=torch.device("cpu")
     net=net.to(device)
     
     # Defining opt method
@@ -132,13 +135,14 @@ if __name__=="__main__":
     parser.add_argument('-datafolder', help='data folder',default='./data/')
     parser.add_argument('-train_path', help='training samples', default='original/train_new.tsv')
     parser.add_argument('-test_path', help='test samples', default='original/test_new.tsv')
-    parser.add_argument('-model_name', help='model to be trained', default='resnet50')
-    parser.add_argument('-dataset', help='dataset to be trained', default='./data/UTKFace')
+    parser.add_argument('-model_name', help='model to be trained', default='VGG')
+    parser.add_argument('-dataset', help='dataset to be trained', default='UTK')
+    #parser.add_argument('-dataset', help='dataset to be trained', default='./data/UTKFace')
     parser.add_argument('-opt', type=str, help='choose optimizer', default="adam")
     parser.add_argument('-num_epoches', type=int, help='number of classes', default=100)
     parser.add_argument('-lr', type=float, help='learning rate', default=0.0001)
     parser.add_argument('-pretrain',action='store_true',help='if this is a pretraining procedure')
-    parser.add_argument('-pretrained_model',type=str,help='The pre-trained model', default="./data/train_resnet50")
+    parser.add_argument('-pretrained_model',type=str,help='The pre-trained model', default="./data/train_VGG")
     
     args = parser.parse_args()
 
@@ -156,7 +160,7 @@ if __name__=="__main__":
     # Checking the existance of pre-trained model
     if not pretrain:
         if not os.path.exists(trained_model):
-            raise FileExistsError("Pretrained Model does not exiset!")
+            raise FileExistsError("Pretrained Model does not exist!")
         if trained_model.split('/')[-1].split('_')[1]!=model_name:
             raise ValueError("Model name does not match the pre-trained model!")
     lists=os.listdir(trained_model)
@@ -166,7 +170,7 @@ if __name__=="__main__":
         if i.split('.')[-1]=='pt':
             trained_model=os.path.join(trained_model,i)
 
-    print(pretrain)
+    # print(pretrain)
     # Train
     train_model(train_path, test_path, model_name=model_name,
     opt=opt,dataset=dataset,num_epochs=num_epoches,lr=lr,pretrain=pretrain,trained_model=trained_model)
