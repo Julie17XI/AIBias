@@ -36,6 +36,7 @@ def train_model(train_path, test_path, batch_size=128, model_name = "VGG", opt="
         trn.Normalize([0.550,0.500,0.483], [0.273,0.265,0.266])])
     train_loader = data_utils.make_dataloader_iter(train_set_X, train_set_y, img_size=img_pixels, batch_size=batch_size,
                                    transform_test=train_transform, shuffle=True)
+    train_loader
     test_loader = data_utils.make_dataloader_iter(test_set_X, test_set_y, img_size=img_pixels, 
                                 batch_size=batch_size, transform_test=test_transform)
     
