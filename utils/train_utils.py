@@ -35,7 +35,7 @@ def train_baseline(net,train_loader,optimizer,state):
     progress = ProgressBar(widgets=widgets, maxval=total)
     mae=0.0
     # Begin training
-    for data, target in progress(train_loader):
+    """for data, target in progress(train_loader):
         data, target = data.cuda(), target.cuda()
         
         # forward
@@ -59,7 +59,7 @@ def train_baseline(net,train_loader,optimizer,state):
             age=float(expected_age(outputs[i].data.cpu()))
             mae+=abs(age-float(target[i].data.cpu()))
 
-    progress.finish()
+    progress.finish()"""
     state['train_loss'] = loss_avg
     state['train_accuracy'] = correct / len(train_loader.dataset)
     state['train_mae']=mae/len(train_loader.dataset)
@@ -91,7 +91,7 @@ def test(net,test_loader,state):
 
     mae=0.0
     with torch.no_grad():
-        for data, target in progress(test_loader):
+        """for data, target in progress(test_loader):
             data, target = data.cuda(), target.cuda()
             # forward
             output = net(data)
@@ -111,7 +111,7 @@ def test(net,test_loader,state):
             # test loss average
             loss_avg += float(loss.data)
 
-    progress.finish()
+    progress.finish()"""
     state['test_loss'] = loss_avg / len(test_loader)
 #     state['test_loss'] = loss_avg
     state['test_accuracy'] = correct / len(test_loader.dataset)

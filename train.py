@@ -137,12 +137,12 @@ if __name__=="__main__":
     parser.add_argument('-train_path', help='training samples', default='original/train_new.tsv')
     parser.add_argument('-test_path', help='test samples', default='original/test_new.tsv')
     parser.add_argument('-model_name', help='model to be trained', default='VGG')
-    parser.add_argument('-dataset', help='dataset to be trained', default='UTK')
+    parser.add_argument('-dataset', help='dataset to be trained', default='UTKFace')
     #parser.add_argument('-dataset', help='dataset to be trained', default='./data/UTKFace')
     parser.add_argument('-opt', type=str, help='choose optimizer', default="adam")
     parser.add_argument('-num_epoches', type=int, help='number of classes', default=100)
     parser.add_argument('-lr', type=float, help='learning rate', default=0.0001)
-    parser.add_argument('-pretrain',action='store_true',help='if this is a pretraining procedure')
+    parser.add_argument('-pretrain',action='store_true',help='if this is a pretraining procedure', default="True")
     parser.add_argument('-pretrained_model',type=str,help='The pre-trained model', default="./data/train_VGG")
     
     args = parser.parse_args()
@@ -152,6 +152,7 @@ if __name__=="__main__":
 
     model_name = args.model_name
     dataset = args.dataset
+    print("dataset:", dataset)
     opt = args.opt
     lr=args.lr
     num_epoches=args.num_epoches
@@ -170,7 +171,7 @@ if __name__=="__main__":
     for i in lists:
         if i.split('.')[-1]=='pt':
             trained_model=os.path.join(trained_model,i)
-
+    print("trained_model:", trained_model)
     # print(pretrain)
     # Train
     train_model(train_path, test_path, model_name=model_name,
